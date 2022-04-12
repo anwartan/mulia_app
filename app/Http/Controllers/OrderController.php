@@ -8,7 +8,9 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Yajra\DataTables\Facades\DataTables;
-
+use PDF;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 class OrderController extends Controller
 {
     /**
@@ -19,10 +21,12 @@ class OrderController extends Controller
     public function index()
     {
         $status = Order::getStatusJson();
+        $now = Carbon::now()->timestamp;
+      
         return view('layouts.order.index',[
             'statusEnum'=>$status,
-            'startDate'=>Carbon::now()->timestamp,
-            'endDate'=>Carbon::now()->timestamp,
+            'startDate'=> $now,
+            'endDate'=> $now,
         ]);
     }
 
@@ -102,9 +106,10 @@ class OrderController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Order $order)
     {
-        //
+        $order->delete();
+        return redirect()->back()->withInput();
     }
 
     public function datagrid(Request $request)
@@ -130,5 +135,34 @@ class OrderController extends Controller
             ->make(true);
         }
         
+    }
+
+    public function print(Request $request)
+    {   
+        $orders = [];
+        $total = 0;
+        if(!empty($request->start_date) && !empty($request->end_date) && !empty($request->status)){
+            $start = date($request->start_date);
+            $end= date($request->end_date);
+            $status = $request->status;
+            $orders = Order::whereBetween('transaction_date',[$start,$end])->where('status', $status)->get();
+            $total = DB::table('orders')
+            ->where('transaction_date', '>=', $start)
+            ->where('transaction_date', '<=', $end)
+            ->where('status', $status)
+            ->sum('price');
+        }
+        
+       
+        $data= [
+            'orders'=>$orders,
+            'start_date'=>$request->start_date,
+            'end_date'=>$request->end_date,
+            'total'=>$total
+        ];  
+        $pdf = PDF::loadView('./layouts/template/order', $data);
+    
+        return $pdf->stream('itsolutionstuff.pdf');
+
     }
 }

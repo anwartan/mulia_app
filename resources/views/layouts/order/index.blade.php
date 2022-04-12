@@ -47,7 +47,7 @@
                             <div class="col-12 col-md-4">
                                 <div class="form-group">
                                     <label class="form-label">Status</label>
-                                    <select id="status" class="form-control">
+                                    <select name="status" id="status" class="form-control">
                                         @foreach ($statusEnum as $status)
                                             <option {{ $status['selected'] ? 'selected' : '' }}
                                                 value="{{ $status['value'] }}">
@@ -61,10 +61,13 @@
                             </div>
                         </div>
                         <div class="row mb-3">
-                            <div class="col">
+                            <div class="col-12">
                                 <button type="submit" class="btn btn-primary">Search</button>
                                 <button type="reset" class="btn btn-danger">Clear</button>
+                                <button onclick="print()" type="button"
+                                    class="btn btn-primary float-right ml-1">Print</button>
                             </div>
+
                         </div>
                     </form>
 
@@ -173,7 +176,13 @@
 
                 <!-- /.row -->
             </div>
-
+            {{-- <form action="{{ route('order.destroy') }}" method="POST" style="display: inline-block">
+                {!! method_field('delete') . csrf_field() !!}
+                <button type="submit" class="btn btn-danger btn-sm">
+                    <i class="fas fa-trash">
+                    </i>
+                </button>
+            </form> --}}
 
             <!-- /.container-fluid -->
 
@@ -342,11 +351,19 @@
 
                         orderable: false,
                         render: function(data, type, row) {
-
-                            return `<a class="btn btn-info btn-sm" href="{{ url('order/') }}/${row.id}/edit">
+                            let editbtn = `<a class="btn btn-info btn-sm mr-1" href="{{ url('order/') }}/${row.id}/edit">
                               <i class="fas fa-pencil-alt">
                               </i>
                               </a>`
+                            let delBtn = `<form action="{{ url('order') }}/ ${row . id}" method="POST" style="display: inline-block">
+                                    {!! method_field('delete') . csrf_field() !!}
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        <i class="fas fa-trash">
+                                        </i>
+                                    </button>
+                                </form>
+                              `
+                            return editbtn + delBtn;
 
                         }
                     },
@@ -390,6 +407,13 @@
                 datagrid.draw();
                 e.preventDefault();
             });
+
         })
+
+        function print() {
+            let data = $('#orderFilter').serialize();
+
+            window.open("{{ url('order/print') }}?" + data.toString(), '_blank');
+        }
     </script>
 @endpush
