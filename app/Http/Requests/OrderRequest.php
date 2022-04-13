@@ -27,7 +27,7 @@ class OrderRequest extends FormRequest
             'transaction_date'=>'required|max:255',
             'description'=>'',
             'price'=>'required|integer',
-            'receipt_no'=>'required',
+            'receipt_no'=>'required|unique:orders',
             'status'=>'required|integer'
         ];
     }
