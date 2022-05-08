@@ -108,6 +108,15 @@
                                         </div>
 
                                     </div>
+                                    <div class="form-group row">
+                                        <div class="offset-sm-2 col-sm-10">
+                                            <div class="form-check">
+                                                <input type="checkbox" {{ $order->cash_out == 1 ? 'checked' : '' }}
+                                                    name="cash_out" class="form-check-input" id="cashOut">
+                                                <label class="form-check-label" for="cashOut">Cash Out</label>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <!-- /.card-body -->
                             </div>

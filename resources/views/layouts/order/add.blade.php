@@ -96,6 +96,7 @@
 
                                     </div>
 
+
                                     <div class="form-group row">
                                         <label for="inputProjectLeader" class="col-sm-2 col-form-label">Harga</label>
                                         <div class="col-sm-10">
@@ -103,6 +104,16 @@
                                         </div>
 
                                     </div>
+                                    <div class="form-group row">
+                                        <div class="offset-sm-2 col-sm-10">
+                                            <div class="form-check">
+                                                <input type="checkbox" name="cash_out" class="form-check-input"
+                                                    id="cashOut">
+                                                <label class="form-check-label" for="cashOut">Cash Out</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                 </div>
                                 <!-- /.card-body -->
                             </div>

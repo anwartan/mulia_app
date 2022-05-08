@@ -34,6 +34,7 @@
         href="{{ asset('assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/plugins/datatables-select/css/select.bootstrap4.min.css') }}">
+    @stack('styles')
 
 </head>
 
@@ -107,6 +108,18 @@
 
 
     <script>
+        $(function() {
+            $('input[type="checkbox"]').on('change', function() {
+                this.value = this.checked ? 1 : 0;
+            }).change();
+        })
+
+        function rupiah(number) {
+            return new Intl.NumberFormat("id-ID", {
+                style: "currency",
+                currency: "IDR"
+            }).format(number);
+        }
     </script>
     @stack('scripts')
 </body>

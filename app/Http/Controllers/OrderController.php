@@ -5,12 +5,16 @@ namespace App\Http\Controllers;
 use App\Http\Requests\OrderRequest;
 use App\Models\Order;
 use Carbon\Carbon;
+use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Yajra\DataTables\Facades\DataTables;
 use PDF;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
+
+use function PHPUnit\Framework\isEmpty;
+
 class OrderController extends Controller
 {
     /**
@@ -53,6 +57,10 @@ class OrderController extends Controller
     {   
         $data  = $request->all();
         $data['creater'] = 'admin';
+       
+        if(isset($data['cash_out'])){
+            $data['cash_out_time'] = Carbon::now();
+        }
         Order::create($data);
         return redirect()->back()->with('status','Order was created successful!');
     }
@@ -92,10 +100,15 @@ class OrderController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(OrderRequest $request,Order $order)
+    public function update(Request $request,Order $order)
     {
         $data  = $request->all();
         $data['updater'] = 'admin';
+        if(isset($data['cash_out'])){
+            $data['cash_out_time'] = Carbon::now();
+        }else{
+            $data['cash_out']="0";
+        }
         $order->update($data);
         return redirect()->back()->with('status','Order was updated successful!');
     }
@@ -115,13 +128,14 @@ class OrderController extends Controller
     public function datagrid(Request $request)
     {
         if($request->ajax()){
-            // dd($request->has('start_date'));
+            // dd($request->search);
             $data = [];
             if(!empty($request->start_date) && !empty($request->end_date)){
                 $start = date($request->start_date);
                 $end= date($request->end_date);
                 $data = Order::whereBetween('transaction_date',[$start,$end])->get();
             }
+            
             return DataTables::of($data) 
             ->filter(function ($instance) use ($request) {
                 if ($request->has('status')) {
@@ -129,8 +143,6 @@ class OrderController extends Controller
                         return str_contains($row['status'], $request->get('status')) ? true : false;
                     });
                 }
-
-               
             })
             ->make(true);
         }
@@ -141,15 +153,16 @@ class OrderController extends Controller
     {   
         $orders = [];
         $total = 0;
-        if(!empty($request->start_date) && !empty($request->end_date) && !empty($request->status)){
+        if(isset($request->start_date) && isset($request->end_date) && isset($request->status)){
             $start = date($request->start_date);
             $end= date($request->end_date);
             $status = $request->status;
-            $orders = Order::whereBetween('transaction_date',[$start,$end])->where('status', $status)->get();
+            $cash_out = $request->cash_out;
+            $orders = Order::whereBetween('transaction_date',[$start,$end]) ->where('cash_out' , $cash_out)->get();
             $total = DB::table('orders')
             ->where('transaction_date', '>=', $start)
             ->where('transaction_date', '<=', $end)
-            ->where('status', $status)
+            ->where('cash_out' , $cash_out)
             ->sum('price');
         }
         

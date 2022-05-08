@@ -21,9 +21,12 @@ class Order extends Model
      protected $appends = ['status_name'];
      
     protected $fillable = [
-        'transaction_date', 'receipt_no', 'description','status','price','creater','updater'
+        'transaction_date', 'receipt_no', 'description','status','price','creater','updater','cash_out','cash_out_time'
     ];
- 
+    public function getCashOutTimeStringAttribute()
+    {
+        return Carbon::parse($this->cash_out_time)->format('Y-m-d h:m:s');
+    }
     public function getCreatedAtStringAttribute()
     {
         return Carbon::parse($this->created_at)->format('Y-m-d h:m:s');

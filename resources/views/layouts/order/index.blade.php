@@ -61,9 +61,21 @@
                             </div>
                         </div>
                         <div class="row mb-3">
+                            <div class="col-12 col-md-4">
+                                <div class="form-group">
+                                    <label class="form-label">Cash Out</label>
+                                    <select name="cash_out" id="selectCashOut" class="form-control">
+                                        <option value="0">Not Cash Out</option>
+                                        <option value="1">Cash Out</option>
+                                    </select>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="row mb-3">
                             <div class="col-12">
-                                <button type="submit" class="btn btn-primary">Search</button>
-                                <button type="reset" class="btn btn-danger">Clear</button>
+                                {{-- <button type="submit" class="btn btn-primary">Search</button>
+                                <button type="reset" class="btn btn-danger">Clear</button> --}}
                                 <button onclick="print()" type="button"
                                     class="btn btn-primary float-right ml-1">Print</button>
                             </div>
@@ -78,14 +90,7 @@
 
 
                         <div class="card">
-                            <div class="card-header">
-                                <a href="{{ route('order.create') }}"
-                                    class="btn btn-primary buttons-copy buttons-html5"><span>Add
-                                        Order</span></a>
 
-
-
-                            </div>
                             <!-- /.card-header -->
                             <div class="card-body">
 
@@ -95,7 +100,11 @@
                                             class="table table-bordered table-hover dataTable dtr-inline collapsed">
                                             <thead>
                                                 <tr>
-                                                    <th></th>
+                                                    <th>
+                                                        <a href="{{ route('order.create') }}"
+                                                            class="btn btn-primary buttons-copy buttons-html5"><span>Add
+                                                                Order</span></a>
+                                                    </th>
                                                     <th>
                                                         Tanggal Pemesanan
                                                     </th>
@@ -110,11 +119,12 @@
                                                         Description
                                                     </th>
                                                     <th>
-                                                        Price
+                                                        Cash Out
                                                     </th>
                                                     <th>
-                                                        Action
+                                                        Price
                                                     </th>
+
                                                 </tr>
                                             </thead>
                                             <tbody></tbody>
@@ -129,36 +139,39 @@
                                                                 class="badge badge-pill badge-primary">{{ $order->status_name }}</span>
                                                         </td>
                                                         <td>{{ $order->price }}</td>
-
                                                         <td>{{ $order->created_at_string }}</td>
                                                     </tr>
                                                 @endforeach
                                             </tbody> --}}
                                             <tfoot>
                                                 <tr>
-                                                    <th></th>
                                                     <th>
+                                                        Please enter to search
+                                                    </th>
+                                                    <th class="filter">
                                                         Tanggal Pemesanan
                                                     </th>
-                                                    <th>
+                                                    <th class="filter">
                                                         Receipt No
                                                     </th>
 
-                                                    <th>
+                                                    <th class="filter">
                                                         Status
                                                     </th>
-                                                    <th>
+                                                    <th class="filter">
                                                         Description
+                                                    </th>
+                                                    <th>
+                                                        Cash Out
                                                     </th>
                                                     <th>
                                                         Price
                                                     </th>
-                                                    <th>
-                                                        Action
-                                                    </th>
+
 
                                                 </tr>
                                             </tfoot>
+
 
                                         </table>
 
@@ -270,11 +283,44 @@
 
     </div>
 @endsection
+@push('styles')
+    <style>
+        .dataTables_filter {
+            display: none;
+        }
+
+    </style>
+@endpush
 @push('scripts')
     <script>
         let datagrid;
         $(function() {
+            $('input[name=start_date],input[name=end_date] ').change(function() {
+                var start_date = $("input[name=start_date]").val();
+                var end_date = $("input[name=end_date]").val();
+                $('#orderFilter').submit();
+            });
+            $('#orderTable tfoot th.filter').each(function() {
+                var title = $(this).text().trim();
+                $(this).html('<input type="text" placeholder="Search ' + title + '" />');
+            });
+
+
             datagrid = $('#orderTable').DataTable({
+                initComplete: function() {
+                    // Apply the search
+                    this.api().columns().every(function() {
+                        var that = this;
+
+                        $('input', this.footer()).on('keyup change clear', function() {
+                            if (that.search() !== this.value) {
+                                that
+                                    .search(this.value)
+                                    .draw();
+                            }
+                        });
+                    });
+                },
                 ajax: {
                     url: "{{ url('order/datagrid') }}",
                     data: function(d) {
@@ -283,26 +329,36 @@
                         d.status = $('#status option:selected').val();
                     }
                 },
-
                 processing: true,
                 serverSide: true,
                 responsive: true,
                 autoWidth: false,
                 columnDefs: [{
                     orderable: false,
-                    className: 'select-checkbox',
                     targets: 0
                 }],
-                select: {
-                    style: 'os',
-                    selector: 'td:first-child'
-                },
+
                 order: [
                     [1, 'asc']
                 ],
                 columns: [{
                         data: null,
-                        defaultContent: '',
+                        orderable: false,
+                        render: function(data, type, row) {
+                            let editbtn = `<a class="btn btn-info btn-sm mr-1" href="{{ url('order/') }}/${row.id}/edit">
+                              <i class="fas fa-pencil-alt">
+                              </i>
+                              </a>`
+                            let delBtn = `<form action="{{ url('order') }}/ ${row . id}" method="POST" style="display: inline-block">
+                                    {!! method_field('delete') . csrf_field() !!}
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        <i class="fas fa-trash">
+                                        </i>
+                                    </button>
+                                </form>
+                              `
+                            return editbtn + delBtn;
+                        }
                     }, {
                         data: 'transaction_date',
                         name: 'transaction_date'
@@ -342,31 +398,33 @@
                         name: 'description'
                     },
                     {
-                        data: 'price',
-                        name: 'price'
-                    },
-                    {
-                        data: null,
+                        data: 'cash_out',
+                        name: 'cash_out',
+                        render: function(data, type) {
+                            let style = 'primary';
+                            let message = "";
+                            if (data === 1) {
+                                style = "success";
+                                message = "Cash Out";
+                            } else {
+                                style = "danger";
+                                message = "Not Cash Out";
+                            }
 
-
-                        orderable: false,
-                        render: function(data, type, row) {
-                            let editbtn = `<a class="btn btn-info btn-sm mr-1" href="{{ url('order/') }}/${row.id}/edit">
-                              <i class="fas fa-pencil-alt">
-                              </i>
-                              </a>`
-                            let delBtn = `<form action="{{ url('order') }}/ ${row . id}" method="POST" style="display: inline-block">
-                                    {!! method_field('delete') . csrf_field() !!}
-                                    <button type="submit" class="btn btn-danger btn-sm">
-                                        <i class="fas fa-trash">
-                                        </i>
-                                    </button>
-                                </form>
-                              `
-                            return editbtn + delBtn;
+                            return '<span class="badge badge-pill badge-' + style + '">' +
+                                message +
+                                '</span>';
 
                         }
                     },
+                    {
+                        data: 'price',
+                        name: 'price',
+                        render: function(data, type) {
+                            return rupiah(parseInt(data))
+                        }
+                    },
+
 
 
                 ],
@@ -397,7 +455,7 @@
                             return intVal(a) + intVal(b);
                         }, 0);
                     $(api.column(5).footer()).html(
-                        'Rp ' + pageTotal
+                        rupiah(parseInt(pageTotal))
                         // + ' ( ' +total + ' total)'
                     );
                 }
