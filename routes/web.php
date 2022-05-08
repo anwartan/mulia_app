@@ -26,7 +26,7 @@ Route::prefix('order')->group(function () {
     Route::get("datagrid",[OrderController::class,'datagrid']);
     Route::get("print",[OrderController::class,'print'])->name('order-print');
 });
- 
+  
 Route::resource("order",OrderController::class);
 
 Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
