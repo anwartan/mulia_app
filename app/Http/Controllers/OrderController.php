@@ -115,13 +115,14 @@ class OrderController extends Controller
     public function datagrid(Request $request)
     {
         if($request->ajax()){
-            // dd($request->has('start_date'));
+            // dd($request->search);
             $data = [];
             if(!empty($request->start_date) && !empty($request->end_date)){
                 $start = date($request->start_date);
                 $end= date($request->end_date);
                 $data = Order::whereBetween('transaction_date',[$start,$end])->get();
             }
+            
             return DataTables::of($data) 
             ->filter(function ($instance) use ($request) {
                 if ($request->has('status')) {
@@ -129,8 +130,6 @@ class OrderController extends Controller
                         return str_contains($row['status'], $request->get('status')) ? true : false;
                     });
                 }
-
-               
             })
             ->make(true);
         }
