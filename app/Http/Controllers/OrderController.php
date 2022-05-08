@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ResponseFormatter;
 use App\Http\Requests\OrderRequest;
 use App\Models\Order;
+use App\Models\OrderItem;
+use App\Models\OrderItemOperate;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -110,6 +113,52 @@ class OrderController extends Controller
     {
         $order->delete();
         return redirect()->back()->withInput();
+    }
+
+    public function saveOrder(Request $request){
+        DB::beginTransaction();
+
+        try {
+            if($request->mode=="CREATE"){
+                $order = new Order;
+                $order->transaction_date = $request->transaction_date;
+                $order->receipt_no=$request->receipt_no;
+                $order->description=$request->description;
+                $order->status=$request->status;
+                $order->price=$request->price;
+                $order->creater = "admin";
+                $order->save();
+                $items = $request->items;
+                
+                for ($i=0; $i < count($items); $i++) {
+                     
+                    $order_item = new OrderItemOperate;
+                    $order_item->order_id = $order->id;
+                    $order_item->product_id =$items[$i]['product_id'];
+                    $order_item->quantity = $items[$i]['quantity'];
+                    $order_item->price = $items[$i]['price'];
+                    $order_item->creater = "admin";
+                   
+                    $order_item->save();
+                };
+            }else if($request->mode=="CREATE"){
+                $order = new Order;
+                $order->transaction_date = $request->transaction_date;
+                $order->receipt_no=$request->receipt_no;
+                $order->description=$request->description;
+                $order->status=$request->status;
+                $order->price=$request->price;
+                $order->creater = "admin";
+            }
+        }catch (\Exception  $e) {
+            DB::rollback();
+            return ResponseFormatter::error(null,$e->getMessage());
+
+            throw $e;
+        }
+       
+        DB::commit();
+        return ResponseFormatter::success(null,"Save successfully");
     }
 
     public function datagrid(Request $request)

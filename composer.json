@@ -19,6 +19,7 @@
         "laravel/tinker": "^2.5",
         "livewire/livewire": "^2.5",
         "power-components/livewire-powergrid": "^2.4",
+        "predis/predis": "^1.1",
         "wire-elements/modal": "^1.0",
         "yajra/laravel-datatables-oracle": "~9.0"
     },

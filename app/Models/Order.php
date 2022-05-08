@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Helpers\CodeGenerator;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -19,7 +20,9 @@ class Order extends Model
      ];
 
      protected $appends = ['status_name'];
-     
+     private const DOCUMENT_INITIAL = "SO";
+     private const REDIS_KEY ="sales_order";
+ 
     protected $fillable = [
         'transaction_date', 'receipt_no', 'description','status','price','creater','updater'
     ];
@@ -52,5 +55,21 @@ class Order extends Model
             array_push($new,$temp);
         };
         return $new;
+    }
+
+    public static function boot()
+    {
+        parent::boot();
+        static::creating(function ($model) {
+            if($model->order_no==null){
+                $date = Carbon::now()->format('dmY');
+                $model->order_no = self::DOCUMENT_INITIAL.$date.sprintf( '%04d',CodeGenerator::generate(self::REDIS_KEY));    
+            }
+        });
+    }
+
+    public function items()
+    {
+        return $this->hasMany(OrderItem::class,'order_id');
     }
 }

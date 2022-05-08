@@ -5,13 +5,13 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1 class="m-0">Add Order</h1>
+                        <h1 class="m-0">Order</h1>
                     </div><!-- /.col -->
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
                             <li class="breadcrumb-item"><a href="#">Home</a></li>
                             <li class="breadcrumb-item "><a href="#">Order</a> </li>
-                            <li class="breadcrumb-item active">Add Order </li>
+                            <li class="breadcrumb-item active">Order</li>
                         </ol>
                     </div><!-- /.col -->
                 </div><!-- /.row -->
@@ -48,7 +48,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col">
+                        <div class="col-12">
                             <div class="card card-primary">
                                 <div class="card-header">
                                     <h3 class="card-title">General</h3>
@@ -62,7 +62,17 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="form-group row">
-                                        <label class="col-sm-2 col-form-label">Date:</label>
+                                        <label class="col-sm-2 col-form-label">Order No</label>
+                                        <div class="col-sm-10">
+                                            <div class="input-group ">
+                                                <input id="order_no" name="order_no" type="text" class="form-control"
+                                                    readonly>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-sm-2 col-form-label">Date</label>
                                         <div class="col-sm-10">
                                             <div class="input-group ">
                                                 <input id="transaction_date" name="transaction_date" type="date"
@@ -103,115 +113,211 @@
                                         </div>
 
                                     </div>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <a href="{{ url('/order') }}" class="btn btn-secondary">Cancel</a>
+                                            <input type="submit" value="Save" class="btn btn-success float-right ml-1">
+                                        </div>
+                                    </div>
                                 </div>
                                 <!-- /.card-body -->
                             </div>
                             <!-- /.card -->
                         </div>
-
-                    </div>
-                    <div class="row">
                         <div class="col-12">
-                            <a href="{{ url('/order') }}" class="btn btn-secondary">Cancel</a>
-                            <input type="submit" value="Save" class="btn btn-success float-right ml-1">
+                            <div class="card card-primary">
+                                <div class="card-header">
+                                    <h3 class="card-title">Item</h3>
+
+                                    <div class="card-tools">
+                                        <button type="button" class="btn btn-tool" data-card-widget="collapse"
+                                            title="Collapse">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="card-body p-0">
+                                    <table id="orderItem" class="table">
+                                        <thead>
+                                            <tr>
+                                                <th style="width: 10px">
+                                                    <button type="button" onclick="addPurchaseItem()"
+                                                        class="btn btn-primary btn-sm">
+                                                        <i class="fas fa-plus">
+                                                        </i>
+                                                    </button>
+                                                </th>
+                                                <th>Product Stock Id</th>
+                                                <th>Product Id</th>
+                                                <th>Product Name</th>
+                                                <th>Remaining Quantity</th>
+                                                <th>Quantity</th>
+                                                <th>Product Price</th>
+                                                <th>Price</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+
+                                            {{-- @foreach ($purchase->items as $item)
+                                                <tr>
+                                                    <td></td>
+                                                    <td>{{ $item->product_id }}</td>
+                                                    <td>{{ $item->product->product_name }}</td>
+                                                    <td>{{ $item->quantity }}</td>
+                                                    <td>{{ $item->price }}</td>
+                                                </tr>
+                                            @endforeach --}}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
+
                     </div>
                 </div>
             </form>
 
         </section>
-        {{-- <div wire:ignore.self class="modal fade show" id="modal-default" aria-modal="true">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h4 class="modal-title">Product</h4>
-                        <button type="button" class="close" wire:click="resetAndClear">
-                            <span aria-hidden="true">×</span>
-                        </button>
-                    </div>
-                    <form wire:submit.prevent="save" class="form-horizontal">
-                        <div class="modal-body">
-                            <div class="form-group row">
-                                <label for="productName" class="col-sm-2 col-form-label">Product Name</label>
-                                <div class="col-sm-10">
-                                    <input type="text"
-                                        class="form-control {{ $errors->has('product_name') ? 'is-invalid' : '' }}"
-                                        id="productName" placeholder="Enter Product Name" wire:model="product_name">
 
-                                    @error('product_name')
-                                        <span class="error invalid-feedback">{{ $message }}</span>
-                                    @enderror
-
-                                </div>
-                            </div>
-
-                            <div class="form-group row">
-                                <label for="productDescription" class="col-sm-2 col-form-label">Product Description</label>
-                                <div class="col-sm-10">
-                                    <textarea id="productDescription" class="form-control {{ $errors->has('product_description') ? 'is-invalid' : '' }}"
-                                        rows="3" placeholder="Enter ..." wire:model="product_description"></textarea>
-                                    @error('product_description')
-                                        <span class="error invalid-feedback">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label for="productSku" class="col-sm-2 col-form-label">Product SKU</label>
-                                <div class="col-sm-10">
-                                    <input type="text"
-                                        class="form-control {{ $errors->has('product_sku') ? 'is-invalid' : '' }}"
-                                        id="productSku" placeholder="Enter Product SKU" wire:model="product_sku">
-                                    @error('product_sku')
-                                        <span class="error invalid-feedback">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label for="productStatus" class="col-sm-2 col-form-label">Product Status</label>
-                                <div class="col-sm-10">
-                                    <select class="form-control" wire:model="product_status" id="productStatus">
-                                        <option>option 1</option>
-                                        <option>option 2</option>
-                                        <option>option 3</option>
-                                        <option>option 4</option>
-                                        <option>option 5</option>
-                                    </select>
-                                    @error('product_status')
-                                        <span class="error invalid-feedback">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                            </div>
-
-
-
-
-                        </div>
-                        <div class="modal-footer justify-content-between">
-                            <button type="button" class="btn btn-default" wire:click="resetAndClear">Close</button>
-                            <div>
-                                <button type="button" class="btn btn-default" wire:click="resetInput">Clear</button>
-                                <button type="submit" class="btn btn-primary">Save</button>
-                            </div>
-
-                        </div>
-                    </form>
-                </div>
-                <!-- /.modal-content -->
-            </div>
-            <!-- /.modal-dialog -->
-        </div> --}}
 
     </div>
 @endsection
 
 @push('scripts')
     <script>
+        let table;
+        let itemPurchaseSelected;
         $(function() {
             // $('#reservationdate').datetimepicker({
             //     format: 'L'
             // });
             $('#transaction_date').val(moment().format('yyyy-MM-DD'));
+            table = $('#orderItem').DataTable({
+                paging: false,
+                info: false,
+                searching: false,
+                ordering: false,
+                responsive: true,
+                autoWidth: false,
+                columnDefs: [
+                    //     {
+                    //     orderable: false,
+                    //     className: 'select-checkbox',
+                    //     targets: 0
+                    // },
+                    {
+                        targets: [1, 2],
+                        visible: false
+                    }
+                ],
+                // select: {
+                //     style: 'os',
+                //     selector: 'td:first-child'
+                // },
+                columns: [{
+                        data: null,
+                        defaultContent: '',
+                        render: function(data, type, full, meta) {
+
+                            return ` <button type="button" onclick="deleteItem(${meta.row})" class="btn btn-danger btn-sm">
+                                                        <i class="fas fa-minus">
+                                                        </i>
+                                                    </button>`
+                        }
+                    },
+                    {
+                        data: 'product_stock_id',
+                        name: 'product_stock_id',
+
+                    },
+                    {
+                        data: 'product_id',
+                        name: 'product_id',
+
+                    },
+                    {
+                        data: 'product_name',
+                        name: 'product_name',
+                        render: function(data, type, full, meta) {
+                            return `<input type="button" onclick="applyProduct(${meta.row})" class="form-control" value="${data}">`
+                        }
+                    },
+                    {
+                        data: 'remaining_quantity',
+                        name: 'remaining_quantity',
+                        render: function(data, type) {
+                            return `<input type="number" readonly class="form-control" value="${data}">`
+                        }
+                    },
+                    {
+                        data: 'quantity',
+                        name: 'quantity',
+                        render: function(data, type) {
+                            return `<input type="number" class="form-control" value="${data}">`
+                        }
+                    },
+                    {
+                        data: 'product_price',
+                        name: 'product_price',
+                        render: function(data, type) {
+                            return `<input type="number" readonly class="form-control" value="${data}">`
+                        }
+                    },
+                    {
+                        data: 'price',
+                        name: 'price',
+                        render: function(data, type) {
+                            return `<input type="number" class="form-control" value="${data}">`
+                        }
+                    },
+
+                ]
+            })
 
         })
+
+        document.addEventListener('stockDatatable', (e) => {
+            if (e.detail) {
+                console.log(e.detail)
+                table.cell(itemPurchaseSelected, 1).data(e.detail.id).invalidate();
+                table.cell(itemPurchaseSelected, 2).data(e.detail.product.id).invalidate();
+                table.cell(itemPurchaseSelected, 3).data(e.detail.product.product_name).invalidate();
+                table.cell(itemPurchaseSelected, 4).data(e.detail.quantity).invalidate();
+                table.cell(itemPurchaseSelected, 6).data(e.detail.price).invalidate();
+
+            }
+        });
+        document.addEventListener('productDatatable', (e) => {
+            if (e.detail) {
+
+                table.cell(itemPurchaseSelected, 1).data(e.detail.id).invalidate();
+                table.cell(itemPurchaseSelected, 2).data(e.detail.product_name).invalidate();
+
+            }
+        });
+
+        function addPurchaseItem() {
+            table.row.add({
+                product_stock_id: '',
+                product_id: '',
+                product_name: '',
+                remaining_quantity: 0,
+                quantity: 0,
+                product_price: 0,
+                price: 0,
+
+            }).draw(false);
+        }
+
+        function deleteItem(index) {
+            table.rows(index)
+                .remove()
+                .draw()
+        }
+
+        function applyProduct(index) {
+            itemPurchaseSelected = index;
+            showProductStock()
+        }
     </script>
 @endpush

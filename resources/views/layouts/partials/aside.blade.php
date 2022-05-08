@@ -36,6 +36,52 @@
                     </a>
                 </li> --}}
                 <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-table"></i>
+                        <p>
+                            Master Data
+                            <i class="fas fa-angle-left right"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('product.index') }}" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Product</p>
+                            </a>
+                        </li>
+
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-table"></i>
+                        <p>
+                            Stock
+                            <i class="fas fa-angle-left right"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('productStock.index') }}" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Product Stock</p>
+                            </a>
+                        </li>
+
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('purchase.index') }}"
+                        class="nav-link {{ request()->is('purchase.index') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-table"></i>
+                        <p>
+                            Purchase
+
+                        </p>
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a href="{{ route('order.index') }}"
                         class="nav-link {{ request()->is('order.index') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-table"></i>
