@@ -78,7 +78,14 @@
 
 
                         <div class="card">
+                            <div class="card-header">
+                                <a href="{{ route('order.create') }}"
+                                    class="btn btn-primary buttons-copy buttons-html5"><span>Add
+                                        Order</span></a>
 
+
+
+                            </div>
                             <!-- /.card-header -->
                             <div class="card-body">
 
@@ -88,11 +95,7 @@
                                             class="table table-bordered table-hover dataTable dtr-inline collapsed">
                                             <thead>
                                                 <tr>
-                                                    <th>
-                                                        <a href="{{ route('order.create') }}"
-                                                            class="btn btn-primary buttons-copy buttons-html5"><span>Add
-                                                                Order</span></a>
-                                                    </th>
+                                                    <th></th>
                                                     <th>
                                                         Tanggal Pemesanan
                                                     </th>
@@ -109,7 +112,9 @@
                                                     <th>
                                                         Price
                                                     </th>
-
+                                                    <th>
+                                                        Action
+                                                    </th>
                                                 </tr>
                                             </thead>
                                             <tbody></tbody>
@@ -131,30 +136,29 @@
                                             </tbody> --}}
                                             <tfoot>
                                                 <tr>
+                                                    <th></th>
                                                     <th>
-                                                        Please enter to search
-                                                    </th>
-                                                    <th class="filter">
                                                         Tanggal Pemesanan
                                                     </th>
-                                                    <th class="filter">
+                                                    <th>
                                                         Receipt No
                                                     </th>
 
-                                                    <th class="filter">
+                                                    <th>
                                                         Status
                                                     </th>
-                                                    <th class="filter">
+                                                    <th>
                                                         Description
                                                     </th>
                                                     <th>
                                                         Price
                                                     </th>
-
+                                                    <th>
+                                                        Action
+                                                    </th>
 
                                                 </tr>
                                             </tfoot>
-
 
                                         </table>
 
@@ -270,11 +274,6 @@
     <script>
         let datagrid;
         $(function() {
-
-            $('#orderTable tfoot th.filter').each(function() {
-                var title = $(this).text().trim();
-                $(this).html('<input type="text" placeholder="Search ' + title + '" />');
-            });
             datagrid = $('#orderTable').DataTable({
                 ajax: {
                     url: "{{ url('order/datagrid') }}",
@@ -291,31 +290,19 @@
                 autoWidth: false,
                 columnDefs: [{
                     orderable: false,
+                    className: 'select-checkbox',
                     targets: 0
                 }],
-
+                select: {
+                    style: 'os',
+                    selector: 'td:first-child'
+                },
                 order: [
                     [1, 'asc']
                 ],
                 columns: [{
                         data: null,
-                        orderable: false,
-                        render: function(data, type, row) {
-                            let editbtn = `<a class="btn btn-info btn-sm mr-1" href="{{ url('order/') }}/${row.id}/edit">
-                              <i class="fas fa-pencil-alt">
-                              </i>
-                              </a>`
-                            let delBtn = `<form action="{{ url('order') }}/ ${row . id}" method="POST" style="display: inline-block">
-                                    {!! method_field('delete') . csrf_field() !!}
-                                    <button type="submit" class="btn btn-danger btn-sm">
-                                        <i class="fas fa-trash">
-                                        </i>
-                                    </button>
-                                </form>
-                              `
-                            return editbtn + delBtn;
-
-                        }
+                        defaultContent: '',
                     }, {
                         data: 'transaction_date',
                         name: 'transaction_date'
@@ -358,7 +345,28 @@
                         data: 'price',
                         name: 'price'
                     },
+                    {
+                        data: null,
 
+
+                        orderable: false,
+                        render: function(data, type, row) {
+                            let editbtn = `<a class="btn btn-info btn-sm mr-1" href="{{ url('order/') }}/${row.id}/edit">
+                              <i class="fas fa-pencil-alt">
+                              </i>
+                              </a>`
+                            let delBtn = `<form action="{{ url('order') }}/ ${row . id}" method="POST" style="display: inline-block">
+                                    {!! method_field('delete') . csrf_field() !!}
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        <i class="fas fa-trash">
+                                        </i>
+                                    </button>
+                                </form>
+                              `
+                            return editbtn + delBtn;
+
+                        }
+                    },
 
 
                 ],

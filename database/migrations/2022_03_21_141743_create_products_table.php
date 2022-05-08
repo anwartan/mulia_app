@@ -19,7 +19,7 @@ class CreateProductsTable extends Migration
             $table->string("product_name")->nullable();
             $table->string("product_description")->nullable();
             $table->string("product_sku")->nullable();
-            $table->tinyInteger("product_status")->nullable();
+            $table->string("product_status")->nullable();
             $table->string("creater")->nullable();
             $table->string("updater")->nullable();
             $table->softDeletes();
