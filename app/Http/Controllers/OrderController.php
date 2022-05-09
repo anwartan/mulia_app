@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
 use function PHPUnit\Framework\isEmpty;
+use function PHPUnit\Framework\isNull;
 
 class OrderController extends Controller
 {
@@ -144,7 +145,10 @@ class OrderController extends Controller
                 }
                 if ($request->has('cash_out')) {
                     $instance->collection = $instance->collection->filter(function ($row) use ($request) {
-                        return str_contains($row['cash_out'], $request->get('cash_out')) ? true : false;
+                        if(!isNull($row['cash_out'])){
+                            return str_contains($row['cash_out'], $request->get('cash_out')) ? true : false;
+                        }
+                        return true;
                     });
                 }
             })
