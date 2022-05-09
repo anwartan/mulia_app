@@ -128,7 +128,6 @@ class OrderController extends Controller
     public function datagrid(Request $request)
     {
         if($request->ajax()){
-            // dd($request->search);
             $data = [];
             if(!empty($request->start_date) && !empty($request->end_date)){
                 $start = date($request->start_date);
@@ -143,6 +142,11 @@ class OrderController extends Controller
                         return str_contains($row['status'], $request->get('status')) ? true : false;
                     });
                 }
+                if ($request->has('cash_out')) {
+                    $instance->collection = $instance->collection->filter(function ($row) use ($request) {
+                        return str_contains($row['cash_out'], $request->get('cash_out')) ? true : false;
+                    });
+                }
             })
             ->make(true);
         }
@@ -153,7 +157,7 @@ class OrderController extends Controller
     {   
         $orders = [];
         $total = 0;
-        if(isset($request->start_date) && isset($request->end_date) && isset($request->status)){
+        if(isset($request->start_date) && isset($request->end_date) && isset($request->cash_out)){
             $start = date($request->start_date);
             $end= date($request->end_date);
             $status = $request->status;

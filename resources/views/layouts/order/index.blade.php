@@ -44,7 +44,7 @@
                                 </div>
 
                             </div>
-                            <div class="col-12 col-md-4">
+                            {{-- <div class="col-12 col-md-4">
                                 <div class="form-group">
                                     <label class="form-label">Status</label>
                                     <select name="status" id="status" class="form-control">
@@ -58,9 +58,17 @@
                                     </select>
                                 </div>
 
+                            </div> --}}
+                            <div class="col-12 col-md-4">
+                                <div class="form-group">
+                                    <label class="form-label">Cash Out</label>
+                                    <select name="cash_out" id="selectCashOut" class="form-control">
+                                        <option value="0">Not Cash Out</option>
+                                        <option value="1">Cash Out</option>
+                                    </select>
+                                </div>
                             </div>
-                        </div>
-                        <div class="row mb-3">
+                            {{-- <div class="row mb-3">
                             <div class="col-12 col-md-4">
                                 <div class="form-group">
                                     <label class="form-label">Cash Out</label>
@@ -71,16 +79,16 @@
                                 </div>
 
                             </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-12">
-                                {{-- <button type="submit" class="btn btn-primary">Search</button>
+                        </div> --}}
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    {{-- <button type="submit" class="btn btn-primary">Search</button>
                                 <button type="reset" class="btn btn-danger">Clear</button> --}}
-                                <button onclick="print()" type="button"
-                                    class="btn btn-primary float-right ml-1">Print</button>
-                            </div>
+                                    <button onclick="print()" type="button"
+                                        class="btn btn-primary float-right ml-1">Print</button>
+                                </div>
 
-                        </div>
+                            </div>
                     </form>
 
                 </div>
@@ -96,6 +104,7 @@
 
                                 <div class="row">
                                     <div class="col">
+
                                         <table id="orderTable"
                                             class="table table-bordered table-hover dataTable dtr-inline collapsed">
                                             <thead>
@@ -161,7 +170,7 @@
                                                     <th class="filter">
                                                         Description
                                                     </th>
-                                                    <th>
+                                                    <th class="filter">
                                                         Cash Out
                                                     </th>
                                                     <th>
@@ -295,9 +304,7 @@
     <script>
         let datagrid;
         $(function() {
-            $('input[name=start_date],input[name=end_date] ').change(function() {
-                var start_date = $("input[name=start_date]").val();
-                var end_date = $("input[name=end_date]").val();
+            $('input[name=start_date],input[name=end_date], #selectCashOut ').change(function() {
                 $('#orderFilter').submit();
             });
             $('#orderTable tfoot th.filter').each(function() {
@@ -326,7 +333,8 @@
                     data: function(d) {
                         d.start_date = $('input[name=start_date]').val();
                         d.end_date = $('input[name=end_date]').val();
-                        d.status = $('#status option:selected').val();
+                        // d.status = $('#status option:selected').val();
+                        d.cash_out = $('#selectCashOut option:selected').val();
                     }
                 },
                 processing: true,
@@ -335,9 +343,13 @@
                 autoWidth: false,
                 columnDefs: [{
                     orderable: false,
+                    className: 'select-checkbox',
                     targets: 0
                 }],
-
+                select: {
+                    style: 'multi',
+                    selector: 'td:first-child'
+                },
                 order: [
                     [1, 'asc']
                 ],
@@ -439,22 +451,22 @@
                             i : 0;
                     };
                     // Total over all pages
-
+                    var column = 6;
                     total = api
-                        .column(5)
+                        .column(column)
                         .data()
                         .reduce(function(a, b) {
                             return intVal(a) + intVal(b);
                         }, 0);
                     pageTotal = api
-                        .column(5, {
+                        .column(column, {
                             page: 'current'
                         })
                         .data()
                         .reduce(function(a, b) {
                             return intVal(a) + intVal(b);
                         }, 0);
-                    $(api.column(5).footer()).html(
+                    $(api.column(column).footer()).html(
                         rupiah(parseInt(pageTotal))
                         // + ' ( ' +total + ' total)'
                     );
